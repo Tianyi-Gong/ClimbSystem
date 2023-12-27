@@ -4278,24 +4278,16 @@ void UClimbComponent::DefaultFloorCheck(float DeltaTime)
 
 				SetUpLedgeWalkState(IsRightWalk);
 
-				/*
 				FOnMontageBlendingOutStarted BlendingOutDelegate;
 				BlendingOutDelegate.BindLambda([this](UAnimMontage* Montage, bool bInterrupted)
 					{
-
+						bool IsRightWalk = (ClimbState == UClimbState::LedgeWalkRight);
+						ObstacleDetectionLedgeWalk(IsRightWalk, ObstacleLocation, ObstacleNormalDir);
 					});
 
 				ClimbingAnimInstance->Montage_SetBlendingOutDelegate(BlendingOutDelegate, MontagePlayInofo.AnimMontageToPlay);
-				*/
 			}
 		}
-		/*
-		else if(!CharacterRightFloorTraceCheckHit.bBlockingHit &&
-				 CharacterLeftFloorTraceCheckHit.bBlockingHit)
-		{
-
-		}
-		*/
 	}
 }
 
