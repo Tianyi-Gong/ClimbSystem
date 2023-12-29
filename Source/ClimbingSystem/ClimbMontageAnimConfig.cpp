@@ -140,6 +140,9 @@ bool UClimbMontageAnimConfig::GetMontagePlayInofoByClimbAction(UClimbAction Clim
 	case UClimbAction::Walk_WalkToLedgeWalkLeft:
 		MontagePlayInofoList = WalkToLedgeWalkLeft;
 		break;
+	case UClimbAction::Walk_WalkToZipLine:
+		MontagePlayInofoList = WalkToZipLine;
+		break;
 	case UClimbAction::Balance_BalanceUpToWalk:
 		MontagePlayInofoList = BalanceUpToWalk;
 		break;

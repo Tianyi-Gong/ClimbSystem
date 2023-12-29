@@ -26,11 +26,11 @@ FHitResult UTraceBlueprintFunctionLibrary::LineTrace(const AActor* TraceContext,
 	return hitResult;
 }
 
-FHitResult UTraceBlueprintFunctionLibrary::SphereTrace(const AActor* TraceContext, const FVector& start, const FVector& end, float radius,const TArray<AActor*>& InIgnoreActors, bool DebugDraw /*= false*/, FLinearColor TraceColor /*= FLinearColor::Red*/, FLinearColor TraceHitColor /*= FLinearColor::Green*/, float DrawDuration /*= 0*/)
+FHitResult UTraceBlueprintFunctionLibrary::SphereTrace(const AActor* TraceContext, const FVector& start, const FVector& end, float radius,const TArray<AActor*>& InIgnoreActors, bool DebugDraw /*= false*/, FLinearColor TraceColor /*= FLinearColor::Red*/, FLinearColor TraceHitColor /*= FLinearColor::Green*/, float DrawDuration /*= 0*/, ECollisionChannel CollisionChannel /*ECollisionChannel::ECC_WorldStatic*/)
 {
 	FHitResult hitResult;
 
-	FCollisionObjectQueryParams CollisionObjectQueryParams(ECC_TO_BITFIELD(ECollisionChannel::ECC_WorldStatic));
+	FCollisionObjectQueryParams CollisionObjectQueryParams(ECC_TO_BITFIELD(CollisionChannel));
 
 	FCollisionShape CollisionShape;
 	CollisionShape.SetSphere(radius);

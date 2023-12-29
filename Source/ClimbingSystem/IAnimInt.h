@@ -16,7 +16,8 @@ enum class UClimbState : uint8
 	Balance,
 	NarrowSpace,
 	LedgeWalkRight,
-	LedgeWalkLeft
+	LedgeWalkLeft,
+	ZipLine
 };
 
 // This class does not need to be modified.

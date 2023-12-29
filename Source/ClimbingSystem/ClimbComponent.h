@@ -7,6 +7,7 @@
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
 #include "IAnimInt.h"
+#include "IZipSystem.h"
 #include "Animation/AnimInstance.h"
 #include "MotionWarpingComponent.h"
 #include "ClimbMontageAnimConfig.h"
@@ -22,7 +23,7 @@ enum class UJumpState : uint8
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class CLIMBINGSYSTEM_API UClimbComponent : public UActorComponent
+class CLIMBINGSYSTEM_API UClimbComponent : public UActorComponent, public IIZipSystem
 {
 	GENERATED_BODY()
 
@@ -70,6 +71,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = AnimConfig, meta = (AllowPrivateAccess = "true"))
 	UClimbMontageAnimConfig* ClimbMontageAnimConfig;
+
+	void INT_FinishZiplineGliding_Implementation();
 
 private:
 	void HandleJumpInput(float DeltaTime);
@@ -200,6 +203,7 @@ private:
 	void SetUpBalanceState();
 	void SetUpNarrowSpaceState();
 	void SetUpLedgeWalkState(bool IsRightWalk);
+	void SetUpZipLineState();
 
 	bool ObstacleEndDetectionUp(float Distance, FVector& Location);
 	bool ObstacleEndDetectionRight(float Distance, FVector& Location);

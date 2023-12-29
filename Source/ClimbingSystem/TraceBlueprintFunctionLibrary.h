@@ -19,7 +19,7 @@ public:
 	static FHitResult LineTrace(const AActor* TraceContext,const FVector& start, const FVector& end, const TArray<AActor*>& InIgnoreActors, bool DebugDraw = false, FLinearColor TraceColor = FLinearColor::Red, FLinearColor TraceHitColor = FLinearColor::Green, float DrawDuration = 0);
 
 	UFUNCTION(BlueprintCallable)
-	static FHitResult SphereTrace(const AActor* TraceContext, const FVector& start, const FVector& end, float radius, const TArray<AActor*>& InIgnoreActors, bool DebugDraw = false, FLinearColor TraceColor = FLinearColor::Red, FLinearColor TraceHitColor = FLinearColor::Green, float DrawDuration = 0);
+	static FHitResult SphereTrace(const AActor* TraceContext, const FVector& start, const FVector& end, float radius, const TArray<AActor*>& InIgnoreActors, bool DebugDraw = false, FLinearColor TraceColor = FLinearColor::Red, FLinearColor TraceHitColor = FLinearColor::Green, float DrawDuration = 0, ECollisionChannel CollisionChannel = ECollisionChannel::ECC_WorldStatic);
 
 	UFUNCTION(BlueprintCallable)
 	static FHitResult BoxTrace(const AActor* TraceContext, const FVector& start, const FVector& end, FRotator rotation, float HalfExtent, const TArray<AActor*>& InIgnoreActors, bool DebugDraw = false, FLinearColor TraceColor = FLinearColor::Red, FLinearColor TraceHitColor = FLinearColor::Green, float DrawDuration = 0);

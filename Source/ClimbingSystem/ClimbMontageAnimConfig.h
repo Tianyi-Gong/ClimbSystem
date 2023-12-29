@@ -64,6 +64,7 @@ enum class UClimbAction : uint8
 	Walk_WalkToNarrowSpace,
 	Walk_WalkToLedgeWalkRight,
 	Walk_WalkToLedgeWalkLeft,
+	Walk_WalkToZipLine,
 	Balance_BalanceUpToWalk,
 	Balance_BalanceDownToWalk,
 	Balance_BalanceTurnBack,
@@ -219,6 +220,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = AnimConfig, meta = (AllowPrivateAccess = "true"))
 	TArray<FMontagePlayInofo> WalkToLedgeWalkLeft;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = AnimConfig, meta = (AllowPrivateAccess = "true"))
+	TArray<FMontagePlayInofo> WalkToZipLine;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = AnimConfig, meta = (AllowPrivateAccess = "true"))
 	TArray<FMontagePlayInofo> BalanceUpToWalk;
