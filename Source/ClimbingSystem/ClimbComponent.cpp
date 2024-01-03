@@ -486,15 +486,15 @@ void UClimbComponent::ObstacleCheckDefault(float DeltaTime)
 
 	const float ZipLineTraceInterval = 0.05;
 
-	ZipLineTraceIntervalTime += DeltaTime;
-	if(ZipLineTraceIntervalTime >= ZipLineTraceInterval)
+	//ZipLineTraceIntervalTime += DeltaTime;
+	//if(ZipLineTraceIntervalTime >= ZipLineTraceInterval)
 	{
 		ZipLineTraceIntervalTime = 0;
 		//ZipLine Trace
 		FVector ZipLineTraceStart = CharacterLocation + FVector::UpVector * CharacterCapsuleHalfHeight;
 		FVector ZipLineTraceEnd = CharacterLocation + FVector::UpVector * 2 * (CharacterCapsuleHalfHeight - CharacterRadius);
 
-		FHitResult ZipLineTraceResult = UTraceBlueprintFunctionLibrary::SphereTrace(OwnerCharacter, ZipLineTraceStart, ZipLineTraceEnd, CharacterRadius, TArray<AActor*>(), bDrawDebug, FColor::Red, FColor::Green, 3, ECollisionChannel::ECC_GameTraceChannel1);
+		FHitResult ZipLineTraceResult = UTraceBlueprintFunctionLibrary::SphereTrace(OwnerCharacter, ZipLineTraceStart, ZipLineTraceEnd, CharacterRadius, TArray<AActor*>(), bDrawDebug, FColor::Red, FColor::Green, 0, ECollisionChannel::ECC_GameTraceChannel1);
 
 		if (ZipLineTraceResult.bBlockingHit)
 		{
