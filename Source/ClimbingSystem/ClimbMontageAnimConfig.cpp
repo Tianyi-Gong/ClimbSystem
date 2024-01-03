@@ -194,6 +194,9 @@ bool UClimbMontageAnimConfig::GetMontagePlayInofoByClimbAction(UClimbAction Clim
 	case UClimbAction::LedgeWalkLeft_DownLedgeWalkToWalk:
 		MontagePlayInofoList = LedgeWalkLeftDownLedgeWalkToWalk;
 		break;
+	case UClimbAction::ZipLine_ZipLineGlidingToWalk:
+		MontagePlayInofoList = ZipLineGlidingToWalk;
+		break;
 	default:
 		break;
 	}

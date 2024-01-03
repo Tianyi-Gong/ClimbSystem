@@ -287,6 +287,12 @@ void UClimbComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 		}
 		break;
 
+		case UClimbState::ZipLine:
+		{
+			HandleZipLineInput();
+		}
+		break;
+
 		default:
 		break;
 	}
@@ -296,7 +302,15 @@ void UClimbComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 
 void UClimbComponent::INT_FinishZiplineGliding_Implementation()
 {
+	ZipLineObj = nullptr;
 
+	SetUpDefaultState();
+
+	FMontagePlayInofo MontagePlayInofo;
+	if (!FindMontagePlayInofoByClimbAction(UClimbAction::ZipLine_ZipLineGlidingToWalk, MontagePlayInofo))
+		return;
+
+	ClimbingAnimInstance->Montage_Play(MontagePlayInofo.AnimMontageToPlay);
 }
 
 void UClimbComponent::HandleJumpInput(float DeltaTime)
@@ -859,6 +873,8 @@ void UClimbComponent::ObstacleCheckDefaultByInput()
 				FMontagePlayInofo MontagePlayInofo;
 				if (!FindMontagePlayInofoByClimbAction(UClimbAction::Walk_WalkToZipLine, MontagePlayInofo))
 					return;
+
+				ZipLineObj = ZipLineObject;
 
 				FTransform MotionWarpingTransform;
 				MotionWarpingTransform.SetRotation(HookRotation.Quaternion());
@@ -4149,6 +4165,26 @@ void UClimbComponent::HandleLedgeWalkMoveInput()
 		{
 			IIAnimInt::Execute_INT_Input(ClimbingAnimInstance, MovementInput);
 		}
+	}
+}
+
+void UClimbComponent::HandleZipLineInput()
+{
+	if (ClimbingAnimInstance->IsAnyMontagePlaying())
+		return;
+
+	if (ClimbingAnimInstance)
+	{
+		UClass* ActorClass = ClimbingAnimInstance->GetClass();
+		if (ActorClass->ImplementsInterface(UIAnimInt::StaticClass()))
+		{
+			IIAnimInt::Execute_INT_Input(ClimbingAnimInstance, MovementInput);
+		}
+	}
+
+	if(ZipLineObj != nullptr)
+	{
+		IIZipSystem::Execute_INT_SetGlidingInput(ZipLineObj , MovementInput);
 	}
 }
 

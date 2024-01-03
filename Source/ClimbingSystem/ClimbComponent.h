@@ -83,6 +83,7 @@ private:
 	void HandleBalanceMoveInput();
 	void HandleNarrowSpaceMoveInput();
 	void HandleLedgeWalkMoveInput();
+	void HandleZipLineInput();
 
 	void DefaultObstacleCheck(float DeltaTime);
 
@@ -255,4 +256,6 @@ private:
 	FRotator NarrowSpaceRotation;
 
 	FRotator LedgeWalkRotation;
+
+	AActor* ZipLineObj;
 };

@@ -45,6 +45,9 @@ public:
 	void INT_SetUpZipLineGliding(const AActor* HookCharacter, const FZipLineData& ZipLineData,float ZOffset, UActorComponent* ClimbComponent);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = ZipSystem)
+	void INT_SetGlidingInput(const FVector2D& inputData);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = ZipSystem)
 	void INT_StartZiplineGliding();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = ZipSystem)
