@@ -82,7 +82,9 @@ enum class UClimbAction : uint8
 	LedgeWalkLeft_DownOutwardCorner,
 	LedgeWalkLeft_UpLedgeWalkToWalk,
 	LedgeWalkLeft_DownLedgeWalkToWalk,
-	ZipLine_ZipLineGlidingToWalk
+	ZipLine_ZipLineGlidingToWalk,
+	ZipLine_RightFallToZipLine,
+	ZipLine_LeftFallToZipLine
 };
 /**
  * 
@@ -279,6 +281,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = AnimConfig, meta = (AllowPrivateAccess = "true"))
 	TArray<FMontagePlayInofo> ZipLineGlidingToWalk;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = AnimConfig, meta = (AllowPrivateAccess = "true"))
+	TArray<FMontagePlayInofo> RightFallToZipLine;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = AnimConfig, meta = (AllowPrivateAccess = "true"))
+	TArray<FMontagePlayInofo> LeftFallToZipLine;
 	
 	bool GetMontagePlayInofoByClimbAction(UClimbAction ClimbAction, FMontagePlayInofo& outMontagePlayInofo);
 };

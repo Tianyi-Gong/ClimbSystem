@@ -258,4 +258,5 @@ private:
 	FRotator LedgeWalkRotation;
 
 	AActor* ZipLineObj;
+	float ZipLineTraceIntervalTime;
 };

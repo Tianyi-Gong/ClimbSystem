@@ -315,33 +315,35 @@ void UClimbComponent::INT_FinishZiplineGliding_Implementation()
 
 void UClimbComponent::HandleJumpInput(float DeltaTime)
 {
-	switch (JumpState)
+	if(ClimbingMovementComponent->MovementMode == EMovementMode::MOVE_Walking)
 	{
-	case UJumpState::Presse:
-	{
-		if (ClimbingAnimInstance->IsAnyMontagePlaying())
-			break;
+		switch (JumpState)
+		{
+		case UJumpState::Presse:
+		{
+			if (ClimbingAnimInstance->IsAnyMontagePlaying())
+				break;
 
-		ObstacleCheckDefaultByInput();
-		OwnerCharacter->Jump();
-		JumpState = UJumpState::Idle;
-	}
-	break;
-
-	case UJumpState::Release:
-	{
-		if (ClimbingAnimInstance->IsAnyMontagePlaying())
-			break;
-
-		OwnerCharacter->StopJumping();
-		JumpState = UJumpState::Idle;
-	}
-	break;
-
-	case UJumpState::Idle:
-	default:
+			ObstacleCheckDefaultByInput();
+			OwnerCharacter->Jump();
+		}
 		break;
+
+		case UJumpState::Release:
+		{
+			if (ClimbingAnimInstance->IsAnyMontagePlaying())
+				break;
+
+			OwnerCharacter->StopJumping();
+		}
+		break;
+
+		case UJumpState::Idle:
+		default:
+			break;
+		}
 	}
+	JumpState = UJumpState::Idle;
 }
 
 void UClimbComponent::HandleDefaultMoveInput()
@@ -373,8 +375,12 @@ void UClimbComponent::ObstacleCheckDefault(float DeltaTime)
 
 	FVector CurrentVelocity = ClimbingMovementComponent->Velocity;
 	FVector CharacterLocation = OwnerCharacter->GetActorLocation();
+	FVector CharacterUpVector = OwnerCharacter->GetActorUpVector();
+	FVector CharacterForwardVector = OwnerCharacter->GetActorForwardVector();
 	float CharacterRadius = OwnerCharacter->GetCapsuleComponent()->GetScaledCapsuleRadius();
-	
+	float CharacterCapsuleHalfHeight = OwnerCharacter->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+
+
 	if(UKismetMathLibrary::VSizeXY(CurrentVelocity) > 150 ||
 	   FVector2D::DotProduct(MovementInput,FVector2D(0,1)) > 0)
 	{
@@ -391,7 +397,6 @@ void UClimbComponent::ObstacleCheckDefault(float DeltaTime)
 
 			bool ObstacleEndDetectionResult = ObstacleEndDetectionUp(150, ObstacleEndLocation);
 			
-			FVector CharacterForwardVector = OwnerCharacter->GetActorForwardVector();
 			float ObstacleToPlayerAngle = UKismetMathLibrary::DegAcos(FVector::DotProduct(ObstacleNormalDir.GetSafeNormal(), -CharacterForwardVector));
 
 			if (ObstacleEndDetectionResult &&
@@ -475,6 +480,80 @@ void UClimbComponent::ObstacleCheckDefault(float DeltaTime)
 					});
 
 				ClimbingAnimInstance->Montage_SetBlendingOutDelegate(BlendingOutDelegate, MontagePlayInofo.AnimMontageToPlay);
+			}
+		}
+	}
+
+	const float ZipLineTraceInterval = 0.05;
+
+	ZipLineTraceIntervalTime += DeltaTime;
+	if(ZipLineTraceIntervalTime >= ZipLineTraceInterval)
+	{
+		ZipLineTraceIntervalTime = 0;
+		//ZipLine Trace
+		FVector ZipLineTraceStart = CharacterLocation + FVector::UpVector * CharacterCapsuleHalfHeight;
+		FVector ZipLineTraceEnd = CharacterLocation + FVector::UpVector * 2 * (CharacterCapsuleHalfHeight - CharacterRadius);
+
+		FHitResult ZipLineTraceResult = UTraceBlueprintFunctionLibrary::SphereTrace(OwnerCharacter, ZipLineTraceStart, ZipLineTraceEnd, CharacterRadius, TArray<AActor*>(), bDrawDebug, FColor::Red, FColor::Green, 3, ECollisionChannel::ECC_GameTraceChannel1);
+
+		if (ZipLineTraceResult.bBlockingHit)
+		{
+			AActor* ZipLineObject = ZipLineTraceResult.GetActor();
+
+			UClass* ZipLineClass = ZipLineObject->GetClass();
+			if (ZipLineClass->ImplementsInterface(UIZipSystem::StaticClass()))
+			{
+				FZipLineData ZipLineData;
+				IIZipSystem::Execute_INT_GetZipLineData(ZipLineObject, ZipLineTraceResult.ImpactPoint, ZipLineData);
+
+				FVector HookUpVector = CharacterUpVector;
+				FVector HookRightVector = FVector::CrossProduct(HookUpVector, ZipLineData.ZipLineEndLocation - ZipLineData.ZipLineStartLocation).GetSafeNormal();;
+				FVector HookForwardVector = FVector::CrossProduct(HookRightVector, HookUpVector).GetSafeNormal();
+
+				float AngleV1ToV2 = UKismetMathLibrary::DegAcos(FVector::DotProduct(CharacterForwardVector, HookForwardVector));
+
+				if(AngleV1ToV2 <= 45)
+				{
+					FVector ActorToHitLocationNormal = (ZipLineTraceResult.ImpactPoint - CharacterLocation).GetSafeNormal();
+					bool AtZipRight = (FVector::DotProduct( HookRightVector, ActorToHitLocationNormal) >= 0);
+
+					FMontagePlayInofo MontagePlayInofo;
+					if (!FindMontagePlayInofoByClimbAction(AtZipRight ? UClimbAction::ZipLine_RightFallToZipLine : UClimbAction::ZipLine_LeftFallToZipLine, MontagePlayInofo))
+						return;
+
+					FRotator HookRotation = UKismetMathLibrary::MakeRotationFromAxes(HookForwardVector, HookRightVector, HookUpVector);
+
+					FTransform MotionWarpingTransform;
+					MotionWarpingTransform.SetRotation(HookRotation.Quaternion());
+
+					float ZOffset = CharacterCapsuleHalfHeight * 2 + MontagePlayInofo.AnimMontageOffSet.Y;
+					float ZipLineGlidingZOffset = CharacterCapsuleHalfHeight + MontagePlayInofo.AnimMontageOffSet.Y;
+
+					FVector HookLocation = ZipLineData.ZipLineHookLocation -
+										   HookUpVector * ZOffset;
+
+					MotionWarpingTransform.SetLocation(HookLocation);
+
+					if (bDrawDebug)
+						DrawDebugSphere(OwnerCharacter->GetWorld(), HookLocation, 5, 32, FColor::Yellow, false, 5);
+
+					FMotionWarpingTarget MotionWarpingTarget = FMotionWarpingTarget("HookTarget", MotionWarpingTransform);
+					MotionWarpingComponent->AddOrUpdateWarpTarget(MotionWarpingTarget);
+
+					ClimbingMovementComponent->SetMovementMode(EMovementMode::MOVE_Flying);
+
+					ClimbingAnimInstance->Montage_Play(MontagePlayInofo.AnimMontageToPlay);
+
+					FOnMontageBlendingOutStarted BlendingOutDelegate;
+					BlendingOutDelegate.BindLambda([this, ZipLineGlidingZOffset, ZipLineData, ZipLineObject](UAnimMontage* Montage, bool bInterrupted)
+						{
+							SetUpZipLineState();
+							IIZipSystem::Execute_INT_SetUpZipLineGliding(ZipLineObject, OwnerCharacter, ZipLineData, ZipLineGlidingZOffset, this);
+							IIZipSystem::Execute_INT_StartZiplineGliding(ZipLineObject);
+						});
+
+					ClimbingAnimInstance->Montage_SetBlendingOutDelegate(BlendingOutDelegate, MontagePlayInofo.AnimMontageToPlay);
+				}
 			}
 		}
 	}

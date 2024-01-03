@@ -197,6 +197,12 @@ bool UClimbMontageAnimConfig::GetMontagePlayInofoByClimbAction(UClimbAction Clim
 	case UClimbAction::ZipLine_ZipLineGlidingToWalk:
 		MontagePlayInofoList = ZipLineGlidingToWalk;
 		break;
+	case UClimbAction::ZipLine_RightFallToZipLine:
+		MontagePlayInofoList = RightFallToZipLine;
+		break;
+	case UClimbAction::ZipLine_LeftFallToZipLine:
+		MontagePlayInofoList = LeftFallToZipLine;
+		break;
 	default:
 		break;
 	}
