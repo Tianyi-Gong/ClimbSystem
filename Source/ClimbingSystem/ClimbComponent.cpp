@@ -300,6 +300,11 @@ void UClimbComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 	MovementInput = FVector2D::ZeroVector;
 }
 
+UClimbState UClimbComponent::GetClimbState()
+{
+	return ClimbState;
+}
+
 void UClimbComponent::INT_FinishZiplineGliding_Implementation()
 {
 	ZipLineObj = nullptr;
@@ -3463,11 +3468,13 @@ bool UClimbComponent::NarrowSpaceUpToWalkCheck()
 
 	FVector CharacterTargetTraceStart = CharacterLocation +
 										CharacterForwardVector * CharacterRadius * 2 +
-										FVector::UpVector * (CharacterHalfHeight - CharacterRadius);
+										FVector::UpVector * (CharacterHalfHeight - CharacterRadius) +
+										-CharacterRightVector * CharacterRadius;
 
 	FVector CharacterTargetTraceEnd = CharacterLocation +
 									  CharacterForwardVector * CharacterRadius * 2 +
-									  FVector::DownVector * (CharacterHalfHeight - CharacterRadius);
+									  FVector::DownVector * (CharacterHalfHeight - CharacterRadius) + 
+									  -CharacterRightVector * CharacterRadius;
 
 	FHitResult  CharacterTargetTraceResult = UTraceBlueprintFunctionLibrary::SphereTrace(OwnerCharacter, CharacterTargetTraceStart, CharacterTargetTraceEnd, CharacterRadius,TArray<AActor*>(), bDrawDebug, FColor::Red, FColor::Green, 3);
 	if(!CharacterTargetTraceResult.bBlockingHit)
@@ -3481,7 +3488,9 @@ bool UClimbComponent::NarrowSpaceUpToWalkCheck()
 
 		FTransform MotionWarpingTransform;
 
-		FVector MotionWarpingLocation = CharacterLocation + CharacterForwardVector * CharacterRadius * 2;
+		FVector MotionWarpingLocation = CharacterLocation +
+										CharacterForwardVector * CharacterRadius * 2 +
+										-CharacterRightVector * CharacterRadius;
 
 		MotionWarpingTransform.SetLocation(MotionWarpingLocation);
 
@@ -4615,6 +4624,12 @@ void UClimbComponent::SetUpDefaultState()
 	}
 
 	OwnerCharacter->GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldStatic, ECollisionResponse::ECR_Block);
+
+	FRotator ControlRotation = OwnerCharacter->GetController()->GetControlRotation();
+	FRotator PreRotator = OwnerCharacter->GetActorRotation();
+	ControlRotation.Yaw = PreRotator.Yaw;
+
+	OwnerCharacter->GetController()->SetControlRotation(ControlRotation);
 }
 
 void UClimbComponent::SetUpClimbingState()
@@ -4721,6 +4736,12 @@ void UClimbComponent::SetUpNarrowSpaceState()
 	}
 
 	OwnerCharacter->GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldStatic, ECollisionResponse::ECR_Ignore);
+
+	FRotator ControlRotation = OwnerCharacter->GetController()->GetControlRotation();
+	FRotator PreRotator = OwnerCharacter->GetActorRotation();
+	ControlRotation.Yaw = PreRotator.Yaw;
+
+	OwnerCharacter->GetController()->SetControlRotation(ControlRotation);
 }
 
 void UClimbComponent::SetUpLedgeWalkState(bool IsRightWalk)

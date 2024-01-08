@@ -72,6 +72,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = AnimConfig, meta = (AllowPrivateAccess = "true"))
 	UClimbMontageAnimConfig* ClimbMontageAnimConfig;
 
+	UFUNCTION(BlueprintCallable)
+	UClimbState GetClimbState();
+
 	void INT_FinishZiplineGliding_Implementation();
 
 private:

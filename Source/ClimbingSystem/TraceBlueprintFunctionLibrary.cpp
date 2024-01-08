@@ -4,6 +4,17 @@
 #include "TraceBlueprintFunctionLibrary.h"
 #include "Engine/Private/KismetTraceUtils.h"
 
+void UTraceBlueprintFunctionLibrary::FindDeltaAngleDegrees(float StartAngle, float TargetAngle, float& DeltaAngle)
+{
+	DeltaAngle = FMath::FindDeltaAngleDegrees(StartAngle,TargetAngle);
+}
+
+void UTraceBlueprintFunctionLibrary::LimitAngle(float InputAngle, float MinAngle, float MaxAngle, float& OutputAngle)
+{
+	OutputAngle = FMath::ClampAngle(InputAngle, MinAngle, MaxAngle);
+	OutputAngle = FRotator::ClampAxis(OutputAngle);
+}
+
 FHitResult UTraceBlueprintFunctionLibrary::LineTrace(const AActor* TraceContext, const FVector& start, const FVector& end, const TArray<AActor*>& InIgnoreActors, bool DebugDraw, FLinearColor TraceColor, FLinearColor TraceHitColor, float DrawDuration)
 {
 	FHitResult hitResult;

@@ -15,6 +15,12 @@ class CLIMBINGSYSTEM_API UTraceBlueprintFunctionLibrary : public UBlueprintFunct
 	GENERATED_BODY()
 	
 public:
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	static void FindDeltaAngleDegrees(float StartAngle,float TargetAngle,float& DeltaAngle);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	static void LimitAngle(float InputAngle,float MinAngle, float MaxAngle, float& OutputAngle);
+
 	UFUNCTION(BlueprintCallable)
 	static FHitResult LineTrace(const AActor* TraceContext,const FVector& start, const FVector& end, const TArray<AActor*>& InIgnoreActors, bool DebugDraw = false, FLinearColor TraceColor = FLinearColor::Red, FLinearColor TraceHitColor = FLinearColor::Green, float DrawDuration = 0);
 
