@@ -3502,6 +3502,8 @@ bool UClimbComponent::NarrowSpaceUpToWalkCheck()
 
 		ClimbingAnimInstance->Montage_Play(MontagePlayInofo.AnimMontageToPlay);
 
+		SetUpDefaultState(true);
+
 		FOnMontageBlendingOutStarted MontageBlendingOutDelegate;
 		MontageBlendingOutDelegate.BindLambda([this](UAnimMontage* Montage, bool bInterrupted)
 			{
@@ -3556,6 +3558,8 @@ bool UClimbComponent::NarrowSpaceDownToWalkCheck()
 		MotionWarpingComponent->AddOrUpdateWarpTarget(MotionWarpingTarget);
 
 		ClimbingAnimInstance->Montage_Play(MontagePlayInofo.AnimMontageToPlay);
+
+		SetUpDefaultState(true);
 
 		FOnMontageBlendingOutStarted MontageBlendingOutDelegate;
 		MontageBlendingOutDelegate.BindLambda([this](UAnimMontage* Montage, bool bInterrupted)
@@ -4477,6 +4481,7 @@ void UClimbComponent::DefaultFloorCheck(float DeltaTime)
 				ClimbingAnimInstance->Montage_Play(MontagePlayInofo.AnimMontageToPlay);
 
 				SetUpLedgeWalkState(IsRightWalk);
+				SetUpLedgeWalkState(IsRightWalk, true);
 
 				FOnMontageBlendingOutStarted BlendingOutDelegate;
 				BlendingOutDelegate.BindLambda([this](UAnimMontage* Montage, bool bInterrupted)
@@ -4584,6 +4589,8 @@ void UClimbComponent::DefaultNarrowSpaceCheck(float DeltaTime)
 						
 						ClimbingAnimInstance->Montage_Play(MontagePlayInofo.AnimMontageToPlay);
 
+						SetUpNarrowSpaceState(true);
+
 						FOnMontageBlendingOutStarted BlendingOutDelegate;
 						BlendingOutDelegate.BindLambda([this](UAnimMontage* Montage, bool bInterrupted)
 							{
@@ -4599,9 +4606,19 @@ void UClimbComponent::DefaultNarrowSpaceCheck(float DeltaTime)
 	}
 }
 
-void UClimbComponent::SetUpDefaultState()
+void UClimbComponent::SetUpDefaultState(bool OnlyChangeState /*= false*/)
 {
 	ClimbState = UClimbState::Default;
+
+	if(OnlyChangeState)
+	{
+		FRotator PreRotator = OwnerCharacter->GetActorRotation();
+		PreRotator.Roll = 0;
+
+		OwnerCharacter->GetController()->SetControlRotation(PreRotator);
+
+		return;
+	}
 
 	ClimbingMovementComponent->SetMovementMode(EMovementMode::MOVE_Walking);
 	ClimbingMovementComponent->bOrientRotationToMovement = true;
@@ -4624,17 +4641,21 @@ void UClimbComponent::SetUpDefaultState()
 	}
 
 	OwnerCharacter->GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldStatic, ECollisionResponse::ECR_Block);
-
-	FRotator ControlRotation = OwnerCharacter->GetController()->GetControlRotation();
-	FRotator PreRotator = OwnerCharacter->GetActorRotation();
-	ControlRotation.Yaw = PreRotator.Yaw;
-
-	OwnerCharacter->GetController()->SetControlRotation(ControlRotation);
 }
 
-void UClimbComponent::SetUpClimbingState()
+void UClimbComponent::SetUpClimbingState(bool OnlyChangeState /*= false*/)
 {
 	ClimbState = UClimbState::Climbing;
+
+	if (OnlyChangeState)
+	{
+		FRotator PreRotator = OwnerCharacter->GetActorRotation();
+		PreRotator.Roll = 0;
+
+		OwnerCharacter->GetController()->SetControlRotation(PreRotator);
+
+		return;
+	}
 
 	ClimbingMovementComponent->SetMovementMode(EMovementMode::MOVE_Flying);
 	ClimbingMovementComponent->bOrientRotationToMovement = false;
@@ -4653,9 +4674,19 @@ void UClimbComponent::SetUpClimbingState()
 	OwnerCharacter->GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldStatic, ECollisionResponse::ECR_Block);
 }
 
-void UClimbComponent::SetUpClimbingPipeState()
+void UClimbComponent::SetUpClimbingPipeState(bool OnlyChangeState /*= false*/)
 {
 	ClimbState = UClimbState::ClimbingPipe;
+
+	if (OnlyChangeState)
+	{
+		FRotator PreRotator = OwnerCharacter->GetActorRotation();
+		PreRotator.Roll = 0;
+
+		OwnerCharacter->GetController()->SetControlRotation(PreRotator);
+
+		return;
+	}
 
 	ClimbingMovementComponent->SetMovementMode(EMovementMode::MOVE_Flying);
 	ClimbingMovementComponent->bOrientRotationToMovement = false;
@@ -4674,9 +4705,19 @@ void UClimbComponent::SetUpClimbingPipeState()
 	OwnerCharacter->GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldStatic, ECollisionResponse::ECR_Block);
 }
 
-void UClimbComponent::SetUpHangingState()
+void UClimbComponent::SetUpHangingState(bool OnlyChangeState /*= false*/)
 {
 	ClimbState = UClimbState::Hanging;
+
+	if (OnlyChangeState)
+	{
+		FRotator PreRotator = OwnerCharacter->GetActorRotation();
+		PreRotator.Roll = 0;
+
+		OwnerCharacter->GetController()->SetControlRotation(PreRotator);
+
+		return;
+	}
 
 	ClimbingMovementComponent->SetMovementMode(EMovementMode::MOVE_Flying);
 	ClimbingMovementComponent->bOrientRotationToMovement = false;
@@ -4696,9 +4737,19 @@ void UClimbComponent::SetUpHangingState()
 
 }
 
-void UClimbComponent::SetUpBalanceState()
+void UClimbComponent::SetUpBalanceState(bool OnlyChangeState /*= false*/)
 {
 	ClimbState = UClimbState::Balance;
+
+	if (OnlyChangeState)
+	{
+		FRotator PreRotator = OwnerCharacter->GetActorRotation();
+		PreRotator.Roll = 0;
+
+		OwnerCharacter->GetController()->SetControlRotation(PreRotator);
+
+		return;
+	}
 
 	ClimbingMovementComponent->SetMovementMode(EMovementMode::MOVE_Walking);
 	ClimbingMovementComponent->bOrientRotationToMovement = false;
@@ -4717,9 +4768,19 @@ void UClimbComponent::SetUpBalanceState()
 	OwnerCharacter->GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldStatic, ECollisionResponse::ECR_Block);
 }
 
-void UClimbComponent::SetUpNarrowSpaceState()
+void UClimbComponent::SetUpNarrowSpaceState(bool OnlyChangeState /*= false*/)
 {
 	ClimbState = UClimbState::NarrowSpace;
+
+	if (OnlyChangeState)
+	{
+		FRotator PreRotator = OwnerCharacter->GetActorRotation();
+		PreRotator.Roll = 0;
+
+		OwnerCharacter->GetController()->SetControlRotation(PreRotator);
+
+		return;
+	}
 
 	ClimbingMovementComponent->SetMovementMode(EMovementMode::MOVE_Flying);
 	ClimbingMovementComponent->bOrientRotationToMovement = false;
@@ -4736,17 +4797,21 @@ void UClimbComponent::SetUpNarrowSpaceState()
 	}
 
 	OwnerCharacter->GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldStatic, ECollisionResponse::ECR_Ignore);
-
-	FRotator ControlRotation = OwnerCharacter->GetController()->GetControlRotation();
-	FRotator PreRotator = OwnerCharacter->GetActorRotation();
-	ControlRotation.Yaw = PreRotator.Yaw;
-
-	OwnerCharacter->GetController()->SetControlRotation(ControlRotation);
 }
 
-void UClimbComponent::SetUpLedgeWalkState(bool IsRightWalk)
+void UClimbComponent::SetUpLedgeWalkState(bool IsRightWalk, bool OnlyChangeState /*= false*/)
 {
 	ClimbState = IsRightWalk ? UClimbState::LedgeWalkRight : UClimbState::LedgeWalkLeft;
+
+	if (OnlyChangeState)
+	{
+		FRotator PreRotator = OwnerCharacter->GetActorRotation();
+		PreRotator.Roll = 0;
+
+		OwnerCharacter->GetController()->SetControlRotation(PreRotator);
+
+		return;
+	}
 
 	ClimbingMovementComponent->SetMovementMode(EMovementMode::MOVE_Flying);
 	ClimbingMovementComponent->bOrientRotationToMovement = false;
@@ -4764,9 +4829,19 @@ void UClimbComponent::SetUpLedgeWalkState(bool IsRightWalk)
 	OwnerCharacter->GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldStatic, ECollisionResponse::ECR_Ignore);
 }
 
-void UClimbComponent::SetUpZipLineState()
+void UClimbComponent::SetUpZipLineState(bool OnlyChangeState /*= false*/)
 {
 	ClimbState = UClimbState::ZipLine;
+
+	if (OnlyChangeState)
+	{
+		FRotator PreRotator = OwnerCharacter->GetActorRotation();
+		PreRotator.Roll = 0;
+
+		OwnerCharacter->GetController()->SetControlRotation(PreRotator);
+
+		return;
+	}
 
 	ClimbingMovementComponent->SetMovementMode(EMovementMode::MOVE_Flying);
 	ClimbingMovementComponent->bOrientRotationToMovement = false;

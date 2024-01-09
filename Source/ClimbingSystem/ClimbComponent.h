@@ -200,14 +200,14 @@ private:
 	void HandleNarrowSpaceLerpTransfor(float DeltaTime);
 	void HandleLedgeWalkLerpTransfor(float DeltaTime);
 
-	void SetUpDefaultState();
-	void SetUpClimbingState();
-	void SetUpClimbingPipeState();
-	void SetUpHangingState();
-	void SetUpBalanceState();
-	void SetUpNarrowSpaceState();
-	void SetUpLedgeWalkState(bool IsRightWalk);
-	void SetUpZipLineState();
+	void SetUpDefaultState(bool OnlyChangeState = false);
+	void SetUpClimbingState(bool OnlyChangeState = false);
+	void SetUpClimbingPipeState(bool OnlyChangeState = false);
+	void SetUpHangingState(bool OnlyChangeState = false);
+	void SetUpBalanceState(bool OnlyChangeState = false);
+	void SetUpNarrowSpaceState(bool OnlyChangeState = false);
+	void SetUpLedgeWalkState(bool IsRightWalk, bool OnlyChangeState = false);
+	void SetUpZipLineState(bool OnlyChangeState = false);
 
 	bool ObstacleEndDetectionUp(float Distance, FVector& Location);
 	bool ObstacleEndDetectionRight(float Distance, FVector& Location);
