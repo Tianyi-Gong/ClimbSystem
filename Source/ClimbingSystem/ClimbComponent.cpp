@@ -309,6 +309,7 @@ void UClimbComponent::INT_FinishZiplineGliding_Implementation()
 {
 	ZipLineObj = nullptr;
 
+	SetUpDefaultState(true);
 	SetUpDefaultState();
 
 	FMontagePlayInofo MontagePlayInofo;
@@ -546,6 +547,8 @@ void UClimbComponent::ObstacleCheckDefault(float DeltaTime)
 					MotionWarpingComponent->AddOrUpdateWarpTarget(MotionWarpingTarget);
 
 					ClimbingMovementComponent->SetMovementMode(EMovementMode::MOVE_Flying);
+
+					SetUpZipLineState(true);
 
 					ClimbingAnimInstance->Montage_Play(MontagePlayInofo.AnimMontageToPlay);
 
